@@ -2,6 +2,8 @@
 #include<string>
 #include<fstream>
 #include<stdlib.h>
+#include<string>
+#include<iomanip>
 
 
 #define dim 100
@@ -31,6 +33,19 @@ struct certificato
 	int ore_set;
 };
 
+void salvataggio(certificato certi[], int dime)
+{
+	int i;
+
+	i = 0;
+	ofstream save("archivio_dip.txt", ios::out, ios::trunc | ios::app );
+	for (i = 0; i < dime; i++)
+	{
+		save << certi[i].nome << "-" << certi[i].cognome << "-" << certi[i].mansione << "-" << certi[i].ore_set << "-" << certi[i].data_i.gg << "/" << certi[i].data_i.mm << "/" << certi[i].data_i.aa << "- fine rapp. " << certi[i].data_f.gg << "/" << certi[i].data_f.mm << "/" << certi[i].data_f.aa << endl;
+	}
+	save.close();
+}
+
 int quantifica()//dimensione dell'archivio (in voci)
 {
 	int i=0;
@@ -46,10 +61,161 @@ int quantifica()//dimensione dell'archivio (in voci)
 	return i;
 }
 
+void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHETTAMENTO IN RAM
+{
+	int i , num;
+	string componi="";
+
+	i = 0;
+
+	while (i <= d)
+	{
+		while (appoggio[i] != '-')
+		{
+			componi = componi + appoggio[i];
+			i++;
+		}
+		certi[i].nome = componi;
+		i++;
+		componi = "";
+
+		while (appoggio[i] != '-')
+		{
+			componi = componi + appoggio[i];
+			i++;
+		}
+		certi[i].cognome = componi;
+		i++;
+		componi = "";
+
+		while (appoggio[i] != '-')
+		{
+			componi = componi + appoggio[i];
+			i++;
+		}
+		certi[i].mansione = componi;
+		i++;
+		componi = "";
+
+		while (appoggio[i] != '-')
+		{
+			componi = componi + appoggio[i];
+			i++;
+		}
+		num = atoi(componi.c_str());
+		certi[i].ore_set = num;
+		i++;
+		componi = "";
+
+//DATA INIZIO
+
+		while (appoggio[i] != '/')
+		{
+			componi = componi + appoggio[i];
+			i++;
+		}
+		num = atoi(componi.c_str());
+		certi[i].data_i.gg = num;
+		i++;
+		componi = "";
+
+		while (appoggio[i] != '/')
+		{
+			componi = componi + appoggio[i];
+			i++;
+		}
+		num = atoi(componi.c_str());
+		certi[i].data_i.mm = num;
+		i++;
+		componi = "";
+
+		while (appoggio[i] != '/')
+		{
+			componi = componi + appoggio[i];
+			i++;
+		}
+		num = atoi(componi.c_str());
+		certi[i].data_i.aa = num;
+		i++;
+		componi = "";
+
+//DATA FINE
+
+		while (appoggio[i] != '/')
+		{
+			componi = componi + appoggio[i];
+			i++;
+		}
+		num = atoi(componi.c_str());
+		certi[i].data_f.gg = num;
+		i++;
+		componi = "";
+
+		while (appoggio[i] != '/')
+		{
+			componi = componi + appoggio[i];
+			i++;
+		}
+		num = atoi(componi.c_str());
+		certi[i].data_f.mm = num;
+		i++;
+		componi = "";
+
+		while (appoggio[i] != '/')
+		{
+			componi = componi + appoggio[i];
+			i++;
+		}
+		num = atoi(componi.c_str());
+		certi[i].data_f.aa = num;
+		i++;
+		componi = "";
+	}
+}
+
+void fill_ram()
+{
+	certificato certi[dim];
+	int i = 0, x, y, lunghezza;
+	string app, app2;
+	char spacc[70];
+
+
+	for (i = 0; i < 70; i++)
+	{
+		spacc[i] = ' ';
+	}
+
+	i = 0;
+	x = 0;
+	y = 0;
+
+	ifstream fill("archivio_dip.txt", ios::in);
+	while (!EOF)
+	{
+		while (getline(fill, app))
+		{
+			lunghezza = app.length();
+			app2 = app.c_str();
+
+			while (x < lunghezza)
+			{
+				spacc[x] = app2[y];
+				x++;
+				y++;
+			}
+
+			spacchetta(certi, dim, spacc, lunghezza);
+		}
+		
+		i++;
+	}
+}
+
 bool check_data(char date[], int d)//controllo data inserita correttamente
 {
 	bool ok=true;
-	int i, x;
+	int i;
 	
 	i = 0;
 
@@ -104,23 +270,21 @@ bool check_data(char date[], int d)//controllo data inserita correttamente
 	return ok;
 }
 
-
-
-void inserimento_ram(certificato certi[], int dime)
+void inserimento_ram(certificato certi[], int dime, int d)
 {
 	int i, x, convertito;
-	char app[4];
-	char data[10];
+	char app[6];
+	char data[11] = { '\0' };
 	bool check = true;
 
 	cout << "nome dipendente" << endl;
-	cin >> certi[dime].nome;
+	cin >> certi[d+1].nome;
 	cout << "cognome dipendente" << endl;
-	cin >> certi[dime].cognome;
+	cin >> certi[d + 1].cognome;
 	cout << "mansione dipendente" << endl;
-	cin >> certi[dime].mansione;
+	cin >> certi[d + 1].mansione;
 	cout << "ore settimanali" << endl;
-	cin >> certi[dime].ore_set;
+	cin >> certi[d + 1].ore_set;
 	cout << "inizio rapporto gg/mm/aaaa" << endl;
 	cin >> data;
 	check = check_data(data, dim_data);
@@ -147,7 +311,7 @@ void inserimento_ram(certificato certi[], int dime)
 			x++;
 		}
 		convertito = atoi(app);
-		certi[dime].data_i.gg = convertito;
+		certi[d + 1].data_i.gg = convertito;
 		i++;
 		x = 0;
 
@@ -158,18 +322,18 @@ void inserimento_ram(certificato certi[], int dime)
 			x++;
 		}
 		convertito = atoi(app);
-		certi[dime].data_i.mm = convertito;
+		certi[d + 1].data_i.mm = convertito;
 		i++;
 		x = 0;
 
-		while (data[i] != '/')
+		while (i<10)
 		{
 			app[x] = data[i];
 			i++;
 			x++;
 		}
 		convertito = atoi(app);
-		certi[dime].data_i.aa = convertito;
+		certi[d + 1].data_i.aa = convertito;
 		x = 0;
 		check = true;
 	}
@@ -187,7 +351,7 @@ void inserimento_ram(certificato certi[], int dime)
 		i = 0;
 		while (i < 5)
 		{
-			app[i] = ' ';
+			app[i] = '\0';
 			i++;
 		}
 
@@ -201,7 +365,7 @@ void inserimento_ram(certificato certi[], int dime)
 			x++;
 		}
 		convertito = atoi(app);
-		certi[dime].data_f.gg = convertito;
+		certi[d + 1].data_f.gg = convertito;
 		i++;
 		x = 0;
 
@@ -212,29 +376,33 @@ void inserimento_ram(certificato certi[], int dime)
 			x++;
 		}
 		convertito = atoi(app);
-		certi[dime].data_f.mm = convertito;
+		certi[d + 1].data_f.mm = convertito;
 		i++;
 		x = 0;
 
-		while (data[i] != '/')
+		while (i<10)
 		{
 			app[x] = data[i];
 			i++;
 			x++;
 		}
 		convertito = atoi(app);
-		certi[dime].data_f.aa = convertito;
-		x = 0;
+		certi[d + 1].data_f.aa = convertito;
 	}
-
-
 }
 
-void salvataggio(certificato certi[], int dime, int posiz)
+
+
+void visualizza(certificato certi[], int dime)
 {
-	ofstream save("archivio_dip.txt", ios::out, ios::app);
-	save << certi[posiz].nome << "-" << certi[posiz].cognome << "-" << certi[posiz].mansione << "- ore sett. " << certi[posiz].ore_set << "- inizio rapp. " << certi[posiz].data_i.gg << "/" << certi[posiz].data_i.mm << "/" << certi[posiz].data_i.aa << "- fine rapp. " << certi[posiz].data_f.gg << "/" << certi[posiz].data_f.mm << "/" << certi[posiz].data_f.aa << endl;
-	save.close();
+	int i;
+
+	cout << setw(20) << "NOME" << setw(20) << "COGNOME" << setw(20) << "MANSIONE" << setw(4) << "ORE SETTIMANALI" << setw(10) << "INIZIO RAPPORTO LAV." << setw(10) << "FINE RAPPORTO LAV." << endl;
+
+	for(i=0;i<dime;i++)
+	{		
+		cout << setw(20) << certi[i].nome << setw(20) << certi[i].cognome << setw(20) << certi[i].mansione << setw(4) << certi[i].ore_set << setw(10) << certi[i].data_i.gg<<"/"<< certi[i].data_i.mm <<"/"<< certi[i].data_i.aa << setw(10) << certi[i].data_f.gg << "/" << certi[i].data_f.mm << "/" << certi[i].data_f.aa << endl;
+	}
 }
 
 int main()
@@ -243,45 +411,74 @@ int main()
 	int memoria;
 	char scelta;
 
+	certi[0] = {
+	{ 27, 3, 2023 }, 
+	{ 99, 99, 9999 },
+	"gestione",
+	"certificati",
+	"Elephant Software",
+	40 // ore_set: 40 ore
+	};
+
 	do
 	{
-		cout << "i. Inserire certificato" << endl;
-		cout << "v. Visualizza certificati" << endl;
-		cout << "m. Modifica certificato" << endl;
-		cout << "c. Cerca certificato" << endl;
-		cout << "e. Elimina certificato" << endl;
-		cout << "esc. Termina programma" << endl;
-		cin >> scelta;
-
-		switch (scelta)
+		memoria = quantifica();
+		if(memoria>0)
 		{
-			case 'i':
-			case 'I':
-				inserimento_ram(certi, dim);
-			break;
+			fill_ram();
+			salvataggio(certi, dim);
+		}
 
-			case 'v':
-			case 'V':
+		else
+		{
+
+			cout << "i. Inserire certificato" << endl;
+			cout << "v. Visualizza certificati" << endl;
+			cout << "m. Modifica certificato" << endl;
+			cout << "c. Cerca certificato" << endl;
+			cout << "e. Elimina certificato" << endl;
+			cout << "esc. Termina programma" << endl;
+			cin >> scelta;
+
+			switch (scelta)
+			{
+				case 'i':
+				case 'I':
+					inserimento_ram(certi, dim, memoria);
 				break;
 
-			case 'm':
-			case 'M':
-				break;
+				case 'v':
+				case 'V':
+					if (memoria == 0)
+					{
+						cout << "non sono presenti certificati da mostrare" << endl;
+						break;
+					}
+					else
+					{
+						visualizza(certi, dim);
+					}
+					break;
 
-			case 'c':
-			case 'C':
-				break;
+				case 'm':
+				case 'M':
+					break;
 
-			case 'e':
-			case 'E':
-				break;
+				case 'c':
+				case 'C':
+					break;
 
-			case 27:
-				break;
+				case 'e':
+				case 'E':
+					break;
 
-			default:
-				cout << "scelta errata" << endl;
-				break;
+				case 27:
+					break;
+
+				default:
+					cout << "scelta errata" << endl;
+					break;
+			}
 		}
 
 	} while (scelta != 27);
