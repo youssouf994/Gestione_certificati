@@ -72,12 +72,30 @@ int quantifica()//dimensione dell'archivio (in voci)
 	
 }
 
-void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHETTAMENTO IN RAM
+int quantifica_ram(certificato certi[], int dime)
+{
+	int num, i;
+
+	num = 0;
+
+	for (i = 0; i < dim; i++)
+	{
+		if (certi[i].ore_set != 0)
+		{
+			num++;
+		}
+	}
+
+	return num;
+}
+
+void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)//SPACCHETTAMENTO DAL FILE ALLA RAM
 {
 	int i , num;
 	string componi="";
 
 	i = 0;
+	pos = pos + 1;
 
 	while (i <= d)
 	{
@@ -86,7 +104,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 			componi = componi + appoggio[i];
 			i++;
 		}
-		certi[i].nome = componi;
+		certi[pos].nome = componi;
 		i++;
 		componi = "";
 
@@ -95,7 +113,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 			componi = componi + appoggio[i];
 			i++;
 		}
-		certi[i].cognome = componi;
+		certi[pos].cognome = componi;
 		i++;
 		componi = "";
 
@@ -104,7 +122,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 			componi = componi + appoggio[i];
 			i++;
 		}
-		certi[i].mansione = componi;
+		certi[pos].mansione = componi;
 		i++;
 		componi = "";
 
@@ -114,7 +132,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 			i++;
 		}
 		num = atoi(componi.c_str());
-		certi[i].ore_set = num;
+		certi[pos].ore_set = num;
 		i++;
 		componi = "";
 
@@ -126,7 +144,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 			i++;
 		}
 		num = atoi(componi.c_str());
-		certi[i].data_i.gg = num;
+		certi[pos].data_i.gg = num;
 		i++;
 		componi = "";
 
@@ -136,7 +154,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 			i++;
 		}
 		num = atoi(componi.c_str());
-		certi[i].data_i.mm = num;
+		certi[pos].data_i.mm = num;
 		i++;
 		componi = "";
 
@@ -146,7 +164,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 			i++;
 		}
 		num = atoi(componi.c_str());
-		certi[i].data_i.aa = num;
+		certi[pos].data_i.aa = num;
 		i++;
 		componi = "";
 
@@ -158,7 +176,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 			i++;
 		}
 		num = atoi(componi.c_str());
-		certi[i].data_f.gg = num;
+		certi[pos].data_f.gg = num;
 		i++;
 		componi = "";
 
@@ -168,7 +186,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 			i++;
 		}
 		num = atoi(componi.c_str());
-		certi[i].data_f.mm = num;
+		certi[pos].data_f.mm = num;
 		i++;
 		componi = "";
 
@@ -178,7 +196,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 			i++;
 		}
 		num = atoi(componi.c_str());
-		certi[i].data_f.aa = num;
+		certi[pos].data_f.aa = num;
 		i++;
 		componi = "";
 	}
@@ -187,44 +205,51 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d)//SPACCHET
 void fill_ram()
 {
 	certificato certi[dim];
-	int i = 0, x, y, lunghezza;
+	int i, x, y, lunghezza, posizione;
 	string app, app2;
 	char spacc[70];
 
+	posizione = quantifica_ram(certi, dim);
 
 	for (i = 0; i < 70; i++)
 	{
 		spacc[i] = ' ';
 	}
 
-	i = 0;
 	x = 0;
-	y = 0;
+	
 
 	ifstream fill("archivio_dip.txt", ios::in);
 	if (fill.is_open())
 	{
 		getline(fill, app);
-	}
+	
 		while (getline(fill, app))
 		{
+			y = 0;
 
-			lunghezza = app.length();
+			app2 = app;
 			app2 = app.c_str();
 
-			while (x < lunghezza)
+			while (app2[y]!='\0')
 			{
-				spacc[x] = app2[y];
-				x++;
-				y++;
+				if (app2[y] != ' ')
+				{
+					spacc[x] = app2[y];
+					x++;
+					y++;
+				}
+				else
+				{
+					y++;
+				}
 			}
 
-			spacchetta(certi, dim, spacc, lunghezza);
-			i++;
+			lunghezza = strlen(spacc);
+			spacchetta(certi, dim, spacc, lunghezza, posizione);
 		}
-	fill.close();
-		
-		
+	}
+	fill.close();		
 	
 }
 
@@ -328,7 +353,7 @@ bool check_data(char date[], int d)//controllo data inserita correttamente
 }
 
 void inserimento_ram(certificato certi[], int dime, int d)
-{
+{	
 	int i, x, convertito;
 	char app[6];
 	char data[11] = { '\0' };
@@ -336,13 +361,14 @@ void inserimento_ram(certificato certi[], int dime, int d)
 	int dim_data;
 
 	cout << "nome dipendente" << endl;
-	cin >> certi[d + 1].nome;
+	cin >> certi[d].nome;
 	cout << "cognome dipendente" << endl;
-	cin >> certi[d + 1].cognome;
+	cin >> certi[d].cognome;
 	cout << "mansione dipendente" << endl;
-	cin >> certi[d + 1].mansione;
+	cin >> certi[d].mansione;
 	cout << "ore settimanali" << endl;
-	cin >> certi[d + 1].ore_set;
+	cin >> certi[d].ore_set;
+
 	cout << "inizio rapporto gg/mm/aaaa" << endl;
 	int j = 0;
 	do
@@ -376,7 +402,7 @@ void inserimento_ram(certificato certi[], int dime, int d)
 					x++;
 				}
 				convertito = atoi(app);
-				certi[d + 1].data_i.gg = convertito;
+				certi[d].data_i.gg = convertito;
 				i++;
 				x = 0;
 
@@ -387,7 +413,7 @@ void inserimento_ram(certificato certi[], int dime, int d)
 					x++;
 				}
 				convertito = atoi(app);
-				certi[d + 1].data_i.mm = convertito;
+				certi[d].data_i.mm = convertito;
 				i++;
 				x = 0;
 
@@ -398,7 +424,7 @@ void inserimento_ram(certificato certi[], int dime, int d)
 					x++;
 				}
 				convertito = atoi(app);
-				certi[d + 1].data_i.aa = convertito;
+				certi[d].data_i.aa = convertito;
 				x = 0;
 				j = 1;
 				check = true;
@@ -408,8 +434,6 @@ void inserimento_ram(certificato certi[], int dime, int d)
 	} while (j != 1);
 	
 	
-
-
 	cout << "fine rapporto gg/mm/aaaa" << endl;
 	j = 0;
 	do
@@ -443,7 +467,7 @@ void inserimento_ram(certificato certi[], int dime, int d)
 				x++;
 			}
 			convertito = atoi(app);
-			certi[d + 1].data_f.gg = convertito;
+			certi[d].data_f.gg = convertito;
 			i++;
 			x = 0;
 
@@ -454,7 +478,7 @@ void inserimento_ram(certificato certi[], int dime, int d)
 				x++;
 			}
 			convertito = atoi(app);
-			certi[d + 1].data_f.mm = convertito;
+			certi[d].data_f.mm = convertito;
 			i++;
 			x = 0;
 
@@ -465,7 +489,7 @@ void inserimento_ram(certificato certi[], int dime, int d)
 				x++;
 			}
 			convertito = atoi(app);
-			certi[d + 1].data_f.aa = convertito;
+			certi[d].data_f.aa = convertito;
 			x = 0;
 			j = 1;
 			check = true;
@@ -473,6 +497,7 @@ void inserimento_ram(certificato certi[], int dime, int d)
 		}
 
 	} while (j != 1);
+
 }
 
 void genera_archivio(certificato certi[], int dime)
@@ -533,7 +558,7 @@ int main()
 	do
 	{
 		
-		 fill_ram();
+		fill_ram();
 		
 		cout << "i. Inserire certificato" << endl;
 		cout << "v. Visualizza certificati" << endl;
