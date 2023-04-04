@@ -97,7 +97,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 	i = 0;
 	pos = pos + 1;
 
-	while (i <= d)
+	while (i < d)
 	{
 		while (appoggio[i] != '-')
 		{
@@ -158,7 +158,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 		i++;
 		componi = "";
 
-		while (appoggio[i] != '/')
+		while (appoggio[i] != '\0')
 		{
 			componi = componi + appoggio[i];
 			i++;
@@ -178,7 +178,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 		num = atoi(componi.c_str());
 		certi[pos].data_f.gg = num;
 		i++;
-		componi = "";
+		componi = " ";
 
 		while (appoggio[i] != '/')
 		{
@@ -188,9 +188,9 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 		num = atoi(componi.c_str());
 		certi[pos].data_f.mm = num;
 		i++;
-		componi = "";
+		componi = " ";
 
-		while (appoggio[i] != '/')
+		while (appoggio[i] != '\0')
 		{
 			componi = componi + appoggio[i];
 			i++;
@@ -233,7 +233,7 @@ void fill_ram()
 
 			while (app2[y]!='\0')
 			{
-				if (app2[y] != ' ')
+				if ( ( (app2[y]>47) && (app2[y]<58) ) || ( (app2[y]>64) && (app2[y]<123) ) )
 				{
 					spacc[x] = app2[y];
 					x++;
@@ -245,7 +245,7 @@ void fill_ram()
 				}
 			}
 
-			lunghezza = strlen(spacc);
+			lunghezza = x;
 			spacchetta(certi, dim, spacc, lunghezza, posizione);
 		}
 	}
