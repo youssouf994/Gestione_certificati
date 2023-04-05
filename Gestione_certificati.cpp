@@ -41,7 +41,7 @@ void salvataggio(certificato certi[], int dime)
 	{
 		if (certi[i].ore_set > 0)
 		{
-			save << setw(20) << certi[i].nome << setw(20) << certi[i].cognome << setw(20) << certi[i].mansione << setw(4) << certi[i].ore_set << setw(10) << certi[i].data_i.gg << "/" << certi[i].data_i.mm << "/" << certi[i].data_i.aa << setw(10) << certi[i].data_f.gg << "/" << certi[i].data_f.mm << "/" << certi[i].data_f.aa << endl;
+			save << setw(20) << certi[i].nome <<"-"<< setw(20) << certi[i].cognome << "-" << setw(20) << certi[i].mansione << "-" << setw(4) << certi[i].ore_set << "-" << setw(10) << certi[i].data_i.gg << "/" << certi[i].data_i.mm << "/" << certi[i].data_i.aa << "-" << setw(10) << certi[i].data_f.gg << "/" << certi[i].data_f.mm << "/" << certi[i].data_f.aa << ";" << endl;
 		}
 	}
 	save.close();
@@ -67,6 +67,9 @@ int quantifica()//dimensione dell'archivio (in voci)
 
 	}
 	dime.close();
+
+	
+	
 	return i;
 
 	
@@ -95,7 +98,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 	string componi="";
 
 	i = 0;
-	pos = pos + 1;
+	pos = pos - 1;
 
 	while (i < d)
 	{
@@ -158,7 +161,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 		i++;
 		componi = "";
 
-		while (appoggio[i] != '\0')
+		while (appoggio[i]!='-')
 		{
 			componi = componi + appoggio[i];
 			i++;
@@ -178,7 +181,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 		num = atoi(componi.c_str());
 		certi[pos].data_f.gg = num;
 		i++;
-		componi = " ";
+		componi = "";
 
 		while (appoggio[i] != '/')
 		{
@@ -188,9 +191,9 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 		num = atoi(componi.c_str());
 		certi[pos].data_f.mm = num;
 		i++;
-		componi = " ";
+		componi = "";
 
-		while (appoggio[i] != '\0')
+		while (appoggio[i] != ';')
 		{
 			componi = componi + appoggio[i];
 			i++;
@@ -202,21 +205,11 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 	}
 }
 
-void fill_ram()
+void fill_ram(certificato certi[], int dime)
 {
-	certificato certi[dim];
 	int i, x, y, lunghezza, posizione;
 	string app, app2;
 	char spacc[70];
-
-	posizione = quantifica_ram(certi, dim);
-
-	for (i = 0; i < 70; i++)
-	{
-		spacc[i] = ' ';
-	}
-
-	x = 0;
 	
 
 	ifstream fill("archivio_dip.txt", ios::in);
@@ -226,26 +219,39 @@ void fill_ram()
 	
 		while (getline(fill, app))
 		{
+			for (i = 0; i < 70; i++)
+			{
+				spacc[i] = ' ';
+			}
+
+			x = 0;
 			y = 0;
 
 			app2 = app;
 			app2 = app.c_str();
 
-			while (app2[y]!='\0')
+			while (app2[y] != ';')
 			{
-				if ( ( (app2[y]>47) && (app2[y]<58) ) || ( (app2[y]>64) && (app2[y]<123) ) )
+				if (app2[y]!=' ')//( ( (app2[y]>47) && (app2[y]<58) ) || ( (app2[y]>64) && (app2[y]<123) ) )
 				{
 					spacc[x] = app2[y];
 					x++;
 					y++;
 				}
+
 				else
 				{
 					y++;
 				}
+
+				if (app2[y] == ';')
+				{
+					spacc[x] = app2[y];
+				}
 			}
 
 			lunghezza = x;
+			posizione = quantifica();
 			spacchetta(certi, dim, spacc, lunghezza, posizione);
 		}
 	}
@@ -359,6 +365,7 @@ void inserimento_ram(certificato certi[], int dime, int d)
 	char data[11] = { '\0' };
 	bool check = true;
 	int dim_data;
+	int inde;
 
 	cout << "nome dipendente" << endl;
 	cin >> certi[d].nome;
@@ -434,66 +441,77 @@ void inserimento_ram(certificato certi[], int dime, int d)
 	} while (j != 1);
 	
 	
-	cout << "fine rapporto gg/mm/aaaa" << endl;
+	cout << "fine rapporto gg/mm/aaaa-99 per indeterminato" << endl;
+
 	j = 0;
 	do
 	{
-
 		cin >> data;
-		dim_data = strlen(data);
-		check = check_data(data, dim_data);
+		inde = atoi(data);
 
-		switch (check)
+		if (inde == 99)
 		{
-		case false:
-			cout << "reinserire - data errata" << endl;
-			break;
-
-		case true:
-			i = 0;
-			while (i < 5)
-			{
-				app[i] = ' ';
-				i++;
-			}
-
-			x = 0;
-			i = 0;
-
-			while (data[i] != '/')
-			{
-				app[x] = data[i];
-				i++;
-				x++;
-			}
-			convertito = atoi(app);
-			certi[d].data_f.gg = convertito;
-			i++;
-			x = 0;
-
-			while (data[i] != '/')
-			{
-				app[x] = data[i];
-				i++;
-				x++;
-			}
-			convertito = atoi(app);
-			certi[d].data_f.mm = convertito;
-			i++;
-			x = 0;
-
-			while (i < 10)
-			{
-				app[x] = data[i];
-				i++;
-				x++;
-			}
-			convertito = atoi(app);
-			certi[d].data_f.aa = convertito;
-			x = 0;
+			certi[d].data_f.aa = inde;
 			j = 1;
-			check = true;
-			break;
+		}
+		
+		else
+		{
+			dim_data = strlen(data);
+			check = check_data(data, dim_data);
+
+			switch (check)
+			{
+				case false:
+					cout << "reinserire - data errata" << endl;
+					break;
+
+				case true:
+					i = 0;
+					while (i < 5)
+					{
+						app[i] = ' ';
+						i++;
+					}
+
+					x = 0;
+					i = 0;
+
+					while (data[i] != '/')
+					{
+						app[x] = data[i];
+						i++;
+						x++;
+					}
+					convertito = atoi(app);
+					certi[d].data_f.gg = convertito;
+					i++;
+					x = 0;
+
+					while (data[i] != '/')
+					{
+						app[x] = data[i];
+						i++;
+						x++;
+					}
+					convertito = atoi(app);
+					certi[d].data_f.mm = convertito;
+					i++;
+					x = 0;
+
+					while (i < 10)
+					{
+						app[x] = data[i];
+						i++;
+						x++;
+					}
+					convertito = atoi(app);
+					certi[d].data_f.aa = convertito;
+					x = 0;
+					j = 1;
+					check = true;
+					break;
+			}
 		}
 
 	} while (j != 1);
@@ -517,6 +535,8 @@ void genera_archivio(certificato certi[], int dime)
 		certi[i].data_f.mm = 0;
 		certi[i].data_f.aa = 0;
 	}
+
+	fill_ram(certi, dim);
 }
 
 void tit()
@@ -548,17 +568,20 @@ int main()
 	char scelta='\0';
 
 	memoria = quantifica();
+	//memoria = memoria + 1;
+
 	if (memoria == 0)
 	{
 		tit();
 	}
 
 	genera_archivio(certi, dim);
-
+	
 	do
 	{
+		salvataggio(certi, dim);
+		fill_ram(certi, dim);
 		
-		fill_ram();
 		
 		cout << "i. Inserire certificato" << endl;
 		cout << "v. Visualizza certificati" << endl;
@@ -573,7 +596,7 @@ int main()
 			case 'i':
 			case 'I':
 				inserimento_ram(certi, dim, memoria);
-				salvataggio(certi, dim);
+				
 				memoria = quantifica();
 			break;
 
@@ -586,7 +609,9 @@ int main()
 				}
 				else
 				{
+					memoria = quantifica();
 					visualizza(certi, dim, memoria);
+					break;
 				}
 				break;
 

@@ -1,2 +1,5 @@
                 NOME             COGNOME            MANSIONEORE SETTIMANALIINIZIO RAPPORTO LAV.FINE RAPPORTO LAV.
-                 dcf               sdc<d                  45   7        14/2/1997        15/5/2002
+                 sdf-                 sdf-                sdaf-   7-        12/5/1994-         0/0/99;
+                 sdf-                 sdf-                sdaf-   7-        12/5/1994-         0/0/99;
+                 sdf-                 sdf-                sdaf-   7-        12/5/1994-         0/0/99;
+                 sdf-                 sdf-                sdaf-   7-        12/5/1994-         0/0/99;
