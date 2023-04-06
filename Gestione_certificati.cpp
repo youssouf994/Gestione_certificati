@@ -30,7 +30,23 @@ struct certificato
 	string cognome;
 	string mansione;
 	int ore_set;
+	int durata_contra;
 };
+
+void salvataggio_raw(certificato certi[], int dime)
+{
+	int i;
+
+	ofstream save("archivio_dip.txt", ios::out | ios::trunc);
+	for (i = 0; i < dime; i++)
+	{
+		if (certi[i].ore_set > 0)
+		{
+			save << setw(20) << certi[i].nome << "-" << setw(20) << certi[i].cognome << "-" << setw(20) << certi[i].mansione << "-" << setw(4) << certi[i].ore_set << "-" << setw(10) << certi[i].data_i.gg << "/" << certi[i].data_i.mm << "/" << certi[i].data_i.aa << "-" << setw(10) << certi[i].data_f.gg << "/" << certi[i].data_f.mm << "/" << certi[i].data_f.aa << ";" << endl;
+		}
+	}
+	save.close();
+}
 
 void salvataggio(certificato certi[], int dime)
 {
@@ -98,7 +114,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 	string componi="";
 
 	i = 0;
-	pos = pos - 1;
+	//pos = pos  1;
 
 	while (i < d)
 	{
@@ -207,7 +223,7 @@ void spacchetta(certificato certi[], int dime, char appoggio[], int d, int pos)/
 
 void fill_ram(certificato certi[], int dime)
 {
-	int i, x, y, lunghezza, posizione;
+	int i, x, y, lunghezza, posizione, index=0;
 	string app, app2;
 	char spacc[70];
 	
@@ -216,6 +232,8 @@ void fill_ram(certificato certi[], int dime)
 	if (fill.is_open())
 	{
 		getline(fill, app);
+
+		
 	
 		while (getline(fill, app))
 		{
@@ -250,9 +268,13 @@ void fill_ram(certificato certi[], int dime)
 				}
 			}
 
+				
+
 			lunghezza = x;
-			posizione = quantifica();
-			spacchetta(certi, dim, spacc, lunghezza, posizione);
+			index = quantifica_ram(certi, dim) + 1;
+			
+				spacchetta(certi, dim, spacc, lunghezza, index);
+				index++;
 		}
 	}
 	fill.close();		
@@ -552,7 +574,7 @@ void visualizza(certificato certi[], int dime, int d)
 
 	cout << setw(20) << "NOME " << setw(20) << " COGNOME " << setw(20) << " MANSIONE " << setw(4) << " ORE SETTIMANALI " << setw(10) << " INIZIO RAPPORTO LAV. " << setw(10) << " FINE RAPPORTO LAV. " << endl;
 
-	for(i=0;i<=d;i++)
+	for(i=0;i<d;i++)
 	{		
 		if (certi[i].ore_set > 0)
 		{
@@ -561,11 +583,91 @@ void visualizza(certificato certi[], int dime, int d)
 	}
 }
 
+void visualizza_unico(certificato certi[], int dime, int i)
+{
+	cout << setw(20) << "NOME " << setw(20) << " COGNOME " << setw(20) << " MANSIONE " << setw(4) << " ORE SETTIMANALI " << setw(10) << " INIZIO RAPPORTO LAV. " << setw(10) << " FINE RAPPORTO LAV. " << endl;
+
+	cout << setw(20) << certi[i].nome << setw(20) << certi[i].cognome << setw(20) << certi[i].mansione << setw(4) << certi[i].ore_set << setw(10) << certi[i].data_i.gg << "/" << certi[i].data_i.mm << "/" << certi[i].data_i.aa << setw(10) << certi[i].data_f.gg << "/" << certi[i].data_f.mm << "/" << certi[i].data_f.aa << endl;
+	
+}
+
+int ricerca(certificato certi[], int dime)
+{
+	int i, trovato;
+	string cerca;
+
+	cout << "nome da cercare" << endl;
+	cin >> cerca;
+
+	i=0;
+
+	while (i < dime)
+	{
+		if (certi[i].nome == cerca)
+		{
+			trovato = i;
+			cout << "il contatto trovato è" << endl;
+			visualizza_unico(certi, dim, trovato);
+		}
+		i++;
+	}
+
+	return trovato;
+}
+
+void modifica(certificato certi[], int dime, int quale)
+{
+	int i, sce, sce2;
+	string nuovo;
+	char data[10];
+
+	cout << "modifica" << endl;
+	cout<<"1.modifica nome"<<endl;
+	cout<<"2.modifica cognome"<<endl;
+	cout<<"3.modifica mansione"<<endl;
+	cout<<"4.modifica ore settimanali"<<endl;
+	cout<<"5.modifica data inizio aa/mm/aaaa "<<endl;
+	cout<<"6.modifica data fine aa/mm/aaaa"<<endl;
+	cin >> sce;
+
+	switch (sce)
+	{
+		case 1:
+			cout << "modifica nome" << endl;
+			cout << "attuale: " << setw(20) << certi[quale].nome << setw(20) << "nuovo: " << setw(20);
+			cin >> nuovo;
+
+			cout << "confermare? 0 no 1 si" << endl;
+			cin >> sce2;
+			switch (sce2)
+			{
+				case 0:
+					break;
+
+				case 1:
+					certi[quale].nome = nuovo;
+					break;
+			
+				default:
+					cout << "scelta errata" << endl;
+					break;
+			}
+			break;
+
+		default:
+			cout << "scelta errata" << endl;
+			break;
+	}
+
+
+}
+
 int main()
 {
 	certificato certi[dim];
 	int memoria;
 	char scelta='\0';
+	int pointer_;
 
 	memoria = quantifica();
 	//memoria = memoria + 1;
@@ -575,11 +677,11 @@ int main()
 		tit();
 	}
 
-	genera_archivio(certi, dim);
+	
 	
 	do
 	{
-		salvataggio(certi, dim);
+		genera_archivio(certi, dim);
 		fill_ram(certi, dim);
 		
 		
@@ -596,7 +698,7 @@ int main()
 			case 'i':
 			case 'I':
 				inserimento_ram(certi, dim, memoria);
-				
+				salvataggio(certi, dim);
 				memoria = quantifica();
 			break;
 
@@ -617,6 +719,8 @@ int main()
 
 			case 'm':
 			case 'M':
+				pointer_ = ricerca(certi, dim);
+				modifica(certi, dim, pointer_);
 				break;
 
 			case 'c':

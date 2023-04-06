@@ -1,5 +1,4 @@
                 NOME             COGNOME            MANSIONEORE SETTIMANALIINIZIO RAPPORTO LAV.FINE RAPPORTO LAV.
-                 sdf-                 sdf-                sdaf-   7-        12/5/1994-         0/0/99;
-                 sdf-                 sdf-                sdaf-   7-        12/5/1994-         0/0/99;
-                 sdf-                 sdf-                sdaf-   7-        12/5/1994-         0/0/99;
-                 sdf-                 sdf-                sdaf-   7-        12/5/1994-         0/0/99;
+                  df-                  sd-                  sd-   4-        15/6/2022-         0/0/99;
+                quao-                 scd-               awdew-   2-        18/6/2023-         0/0/99;
+                  df-                  sd-                  sd-   4-        15/6/2022-         0/0/99;
